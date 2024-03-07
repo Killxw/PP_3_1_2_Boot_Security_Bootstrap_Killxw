@@ -1,22 +1,78 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
-    <title>User Details</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 </head>
 <body>
-<h1>User Details</h1>
+<nav class="navbar navbar-expand-xl navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand">
+            <span th:text="${username}"></span>
+            <span th:if="${not #lists.isEmpty(roles)}">
+                <span th:text="' roles: '"></span>
+                <span th:text="${roles}"></span>
+            </span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
+                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-<div>
-    <h2>Информация о пользователе</h2>
-    <p>Имя: <span th:text="${user.getUsername()}"></span></p>
-    <p>Роли:
-        <span th:each="role : ${userRoles}" th:text="${role.getAuthority()} + ', '"></span>
-    </p>
+            </ul>
+            <span class="navbar-text">
+                <a th:href="@{/logout}" class="btn btn-outline-danger">Log out</a>
+            </span>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group">
+                <a href="#user" class="list-group-item list-group-item-action active" data-bs-toggle="tab">User</a>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="tab-content" id="myFirstTabContent">
+                <div class="tab-pane fade show active" id="user" role="tabpanel" aria-labelledby="user-tab">
+                    <h1>User Informational Page</h1>
+                    <h2>About user</h2>
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Username</th>
+                            <th scope="col">Roles</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td><span th:text="${currentUser?.id}"></span></td>
+                            <td><span th:text="${#authentication.name}"></span></td>
+                            <td>
+                                <th:block th:each="role : ${#authentication.authorities}">
+                                    <span th:text="${role.authority}"></span>,
+                                </th:block>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div th:if="${user == null}">
-    <p>User not found.</p>
-</div>
-<a href="/logout">Log out</a>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
 </body>
 </html>

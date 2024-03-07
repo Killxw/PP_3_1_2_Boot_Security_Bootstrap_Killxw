@@ -2,15 +2,21 @@ package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.kata.spring.boot_security.demo.authority.RoleType;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -22,9 +28,20 @@ public class AdminController {
         this.userService = userService;
     }
     @GetMapping
-    public String printUsers(ModelMap model) {
+    public String printUsers(ModelMap model, Authentication authentication) {
         model.addAttribute("users", userService.listUsers());
-        return "users";
+        String username = authentication.getName();
+        model.addAttribute("username", username);
+        List<String> roles = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+        model.addAttribute("roles", roles);
+        model.addAttribute("user", new User());
+        model.addAttribute("roles", Arrays.asList(RoleType.values()));
+        model.addAttribute("error", model.get("error"));
+        User currentUser = userService.findUserByUsername(username).get();
+        model.addAttribute("currentUser", currentUser);
+        return "adminTest";
     }
     @GetMapping("/logoutSuccess")
     public String logout(){
@@ -39,14 +56,14 @@ public class AdminController {
     }
 
     @PostMapping("/add")
-    public String addUser(@ModelAttribute("user") User user, Model model) {
+    @ResponseStatus(HttpStatus.OK)
+    public String addUser(@ModelAttribute("user") User user, RedirectAttributes redirectAttributes) {
         try {
             userService.add(user);
             return "redirect:/admin";
-        }  catch (DataIntegrityViolationException e) {
-            model.addAttribute("error", "Username is already taken");
-            model.addAttribute("roles", Arrays.asList(RoleType.values()));
-            return "add";
+        } catch (DataIntegrityViolationException e) {
+            redirectAttributes.addFlashAttribute("error", "Username is already taken");
+            throw new UsernameAlreadyTakenException();
         }
     }
 
@@ -78,5 +95,9 @@ public class AdminController {
     public String changeUser(@ModelAttribute("user") User user) {
         userService.change(user);
         return "redirect:/admin";
+    }
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Username is already taken")
+    static
+    class UsernameAlreadyTakenException extends RuntimeException {
     }
 }
