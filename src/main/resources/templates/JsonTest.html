@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+<body>
+<nav class="navbar navbar-expand-xl navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a id="navbarBrand" class="navbar-brand">
+            <span></span>
+            <span>
+                <span th:text="' roles: '"></span>
+                <span></span>
+            </span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
+                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+            </ul>
+            <span class="navbar-text">
+                <a th:href="@{/logout}" class="btn btn-outline-danger">Log out</a>
+            </span>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group">
+                <a href="#admin" class="list-group-item list-group-item-action active" data-bs-toggle="tab">Admin</a>
+                <a href="#user" class="list-group-item list-group-item-action" data-bs-toggle="tab">User</a>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="tab-content" id="myFirstTabContent">
+                <div class="tab-pane fade show active" id="admin" role="tabpanel" aria-labelledby="admin-tab">
+                    <h1>Admin Panel</h1>
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users"
+                                    type="button" role="tab" aria-controls="users" aria-selected="true">Users
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="add-user-tab" data-bs-toggle="tab" data-bs-target="#add-user"
+                                    type="button" role="tab" aria-controls="add-user" aria-selected="false">Add User
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="mySecondTabContent">
+                        <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Username</th>
+                                    <th scope="col">Roles</th>
+                                    <th scope="col">Edit</th>
+                                    <th scope="col">Delete</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane fade" id="add-user" role="tabpanel" aria-labelledby="add-user-tab">
+                            <div id="errorMessage" style="color: red;"></div>
+                            <form id="addUserForm">
+                                <div class="row mb-3 d-flex flex-column">
+                                    <div class="col-sm-2">
+                                        <label for="username" class="form-label">Username</label>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="username">
+                                    </div>
+                                </div>
+                                <div class="row mb-3 d-flex flex-column">
+                                    <div class="col-sm-2">
+                                        <label for="password" class="form-label">Password</label>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="password">
+                                    </div>
+                                </div>
+                                <div class="row mb-3 d-flex flex-column">
+                                    <div class="col-sm-2">
+                                        <label for="roles" class="form-label">Roles</label>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        <select multiple="multiple" class="form-select" id="roles">
+                                            <!-- Здесь не нужно использовать Thymeleaf, так как это обрабатывается на клиентской стороне -->
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-2"></div>
+                                    <div class="col-sm-10">
+                                        <button type="button" class="btn btn-primary" id="addUserButton">Add</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="user" role="tabpanel" aria-labelledby="user-tab">
+                    <h1>User Informational Page</h1>
+                    <h2>About user</h2>
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Username</th>
+                            <th scope="col">Roles</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Форма для редактирования пользователя -->
+                <form id="editUserForm">
+                    <input type="hidden" id="userId"/>
+                    <div class="mb-3">
+                        <label for="usernameCh" class="form-label">Enter username:</label>
+                        <input type="text" class="form-control" id="usernameCh"/>
+                    </div>
+                    <div class="mb-3">
+                        <input type="hidden" id="passwordChangedInput" name="passwordChanged" value="false">
+
+                        <label for="passwordCh" class="form-label">Enter password:</label>
+                        <input type="text" class="form-control" id="passwordCh"/>
+                    </div>
+                    <div class="col-sm-10">
+                        <select multiple="multiple" class="form-select" id="rolesCh">
+                            <!-- Здесь не нужно использовать Thymeleaf, так как это обрабатывается на клиентской стороне -->
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="updateUserButton">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteUserModalLabel">Delete User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="deleteUserForm" action="/admin/delete" method="GET">
+                    <input type="hidden" id="deleteUserId" name="id">
+                    <p>ID: <span id="deleteUserInfoId"></span></p>
+                    <p>Username: <span id="deleteUserInfoUsername"></span></p>
+                    <p>Roles: <span id="deleteUserInfoRoles"></span></p>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger" id="confirmDeleteUserButton">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Загрузка данных о текущем пользователе
+        fetch('/admin/currentUser')
+            .then(response => response.json())
+            .then(data => {
+                const username = data.username;
+                const roles = data.roles.map(role => role.authority).join(', ');
+                document.querySelector('#navbarBrand span:nth-of-type(1)').textContent = username;
+                document.querySelector('#navbarBrand span:nth-of-type(2)').textContent = roles;
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+            });
+
+        // Загрузка списка ролей
+        function loadRoles() {
+            fetch('/admin/roles')
+                .then(response => response.json())
+                .then(data => {
+                    const rolesSelect = document.getElementById('roles');
+                    // Очистить список ролей, если он уже заполнен
+                    rolesSelect.innerHTML = '';
+                    // Пройтись по списку ролей и добавить каждую роль в элемент <select>
+                    data.forEach(role => {
+                        const option = document.createElement('option');
+                        option.value = role;
+                        option.textContent = role;
+                        rolesSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading roles:', error);
+                });
+        }
+
+
+        // Функция для заполнения таблицы пользователей
+        function populateUsersTable(users) {
+            const tbody = document.querySelector('#users tbody');
+            tbody.innerHTML = ''; // Очищаем содержимое tbody перед заполнением
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+
+                // Создаем ячейки для каждого столбца и заполняем их данными из объекта пользователя
+                const idCell = document.createElement('td');
+                idCell.textContent = user.id;
+                row.appendChild(idCell);
+
+                const usernameCell = document.createElement('td');
+                usernameCell.textContent = user.username;
+                usernameCell.classList.add('username-cell'); // Добавляем класс .username-cell
+                row.appendChild(usernameCell);
+
+                const rolesCell = document.createElement('td');
+                // Преобразуем массив ролей пользователя в строку и заполняем соответствующую ячейку
+                rolesCell.textContent = user.roles.map(role => role.authority).join(', ');
+                row.appendChild(rolesCell);
+
+
+                const editCell = document.createElement('td');
+                // Добавляем кнопку для редактирования (если нужно)
+                editCell.innerHTML = '<button class="btn btn-primary edit-user-btn">Edit</button>';
+                row.appendChild(editCell);
+
+                const deleteCell = document.createElement('td');
+// Добавляем кнопку для удаления (если нужно) с классом delete-user-btn
+                deleteCell.innerHTML = '<button class="btn btn-danger delete-user-btn">Delete</button>';
+                row.appendChild(deleteCell);
+
+
+                // Добавляем строку в таблицу
+                tbody.appendChild(row);
+            });
+        }
+
+        // Обновление таблицы пользователей
+        function updateUsersTable() {
+            fetch('/admin/users')
+                .then(response => response.json())
+                .then(users => {
+                    populateUsersTable(users); // Заполняем таблицу данными о пользователях
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                });
+        }
+
+        updateUsersTable();
+
+        // Добавление нового пользователя
+        document.getElementById('addUserButton').addEventListener('click', function () {
+            // Получаем данные из формы
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const roles = Array.from(document.getElementById('roles').selectedOptions).map(option => option.value);
+
+            // Создаем объект с данными пользователя
+            const userData = {
+                username: username,
+                password: password,
+                roles: roles,
+                passwordChanged: false
+            };
+
+            // Отправляем данные на сервер
+            fetch('/admin/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json' // Устанавливаем заголовок Content-Type для указания формата данных
+                },
+                body: JSON.stringify(userData) // Преобразуем данные в формат JSON и отправляем
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Если запрос выполнен успешно (статус 200 OK)
+                        // Очищаем форму
+                        document.getElementById('addUserForm').reset();
+                        // Очищаем сообщение об ошибке, если оно было видно
+                        document.getElementById('errorMessage').textContent = '';
+                        // Обновляем таблицу после успешного добавления пользователя
+                        updateUsersTable();
+                    } else {
+                        // Если в ответе сервера ошибка (например, статус 4xx или 5xx)
+                        // Вызываем обработчик ошибки
+                        throw new Error('Username already taken');
+                    }
+                })
+                .catch(error => {
+                    // При возникновении ошибки при отправке запроса или при получении ответа
+                    console.error('Error:', error);
+                    // Выводим сообщение об ошибке на страницу
+                    document.getElementById('errorMessage').textContent = 'Username already taken';
+                });
+        });
+
+        // Обработчик события для кнопки "Save changes"
+        document.getElementById('updateUserButton').addEventListener('click', function () {
+            // Получаем данные из формы
+            const userId = document.getElementById('userId').value;
+            const username = document.getElementById('usernameCh').value;
+            const password = document.getElementById('passwordCh').value;
+            const roles = Array.from(document.getElementById('rolesCh').selectedOptions).map(option => option.value);
+
+            // Создаем объект с данными пользователя
+            const userData = {
+                id: userId,
+                username: username,
+                password: password,
+                roles: roles,
+                passwordChanged: false
+            };
+
+            // Отправляем данные на сервер
+            fetch('/admin/change', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json' // Устанавливаем заголовок Content-Type для указания формата данных
+                },
+                body: JSON.stringify(userData) // Преобразуем данные в формат JSON и отправляем
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Если запрос выполнен успешно (статус 200 OK)
+                        // Закрываем модальное окно
+                        $('#editUserModal').modal('hide');
+                        // Обновляем таблицу пользователей
+                        updateUsersTable();
+                    } else {
+                        // Если в ответе сервера ошибка (например, статус 4xx или 5xx)
+                        // Вызываем обработчик ошибки
+                        throw new Error('Error updating user');
+                    }
+                })
+                .catch(error => {
+                    // При возникновении ошибки при отправке запроса или при получении ответа
+                    console.error('Error:', error);
+                    // Выводим сообщение об ошибке на страницу
+                    document.getElementById('errorMessage').textContent = 'Error updating user';
+                });
+        });
+
+        // Функция для загрузки списка ролей и их отображения в модальном окне редактирования пользователя
+        // Загрузка списка ролей
+        function loadRolesInEditModal(userData) {
+            // Очищаем список ролей перед загрузкой новых данных
+            $('#rolesCh').empty();
+
+            // Загрузка списка ролей
+            fetch('/admin/roles')
+                .then(response => response.json())
+                .then(data => {
+                    const rolesSelect = document.getElementById('rolesCh');
+                    // Очистить список ролей, если он уже заполнен
+                    rolesSelect.innerHTML = '';
+                    // Пройтись по списку ролей и добавить каждую роль в элемент <select>
+                    data.forEach(role => {
+                        const option = document.createElement('option');
+                        option.value = role;
+                        option.textContent = role;
+                        rolesSelect.appendChild(option);
+                    });
+                    // Отображаем модальное окно после загрузки данных о ролях
+                    $('#editUserModal').modal('show');
+                })
+                .catch(error => {
+                    console.error('Error loading roles:', error);
+                });
+        }
+
+
+// Добавляем обработчик события для каждой кнопки "Edit"
+        $(document).on('click', '.edit-user-btn', function () {
+            console.log('Edit button clicked'); // Добавим вывод в консоль для отладки
+
+            // Получаем имя пользователя из строки таблицы
+            const username = $(this).closest('tr').find('.username-cell').text();
+
+            console.log('Username:', username); // Добавим вывод в консоль для отладки
+
+            // Выполняем AJAX-запрос, чтобы получить данные о пользователе
+            $.ajax({
+                type: 'GET',
+                url: '/admin/findUser',
+                data: {
+                    username: username
+                },
+                success: function (userData) {
+                    // Заполняем модальное окно данными о пользователе
+                    $('#userId').val(userData.id);
+                    $('#usernameCh').val(userData.username);
+
+                    // Вызываем функцию для загрузки и отображения списка ролей
+                    loadRolesInEditModal(userData);
+
+                    // Добавляем обработчик для поля ввода нового пароля
+                    $('#passwordCh').on('input', function () {
+                        // Получаем значение поля ввода нового пароля
+                        const newPassword = $(this).val();
+                        // Получаем скрытое поле для хранения информации об изменении пароля
+                        const passwordChangedInput = $('#passwordChangedInput');
+
+                        // Проверяем, заполнено ли поле ввода нового пароля
+                        if (newPassword !== '') {
+                            // Если поле заполнено, устанавливаем значение скрытого поля на true
+                            passwordChangedInput.val('true');
+                        } else {
+                            // Если поле пустое, устанавливаем значение скрытого поля на false
+                            passwordChangedInput.val('false');
+                        }
+                    });
+                },
+                error: function () {
+                    console.error('Ошибка при получении данных пользователя');
+                }
+            });
+        });
+        // Обработчик события для поля ввода пароля
+        $('#passwordCh').on('change', function () {
+            // Получаем текущее значение поля ввода пароля
+            const newPassword = $(this).val().trim();
+
+            // Получаем текущее значение поля, отвечающего за флаг изменения пароля
+            const passwordChangedInput = $('#passwordChangedInput');
+
+            // Получаем текущее значение флага изменения пароля
+            const passwordChanged = passwordChangedInput.val() === 'true';
+
+            // Проверяем, был ли введен новый пароль, и устанавливаем соответствующее значение для поля флага
+            if (newPassword) {
+                passwordChangedInput.val('true'); // Устанавливаем значение в true, если введен новый пароль
+            } else {
+                passwordChangedInput.val('false'); // Устанавливаем значение в false, если пароль не был изменен
+            }
+        });
+
+
+
+// Обработчик события для кнопки "Save changes"
+        $('#updateUserButton').on('click', function () {
+            // Получаем данные из формы
+            const userId = $('#userId').val();
+            const username = $('#usernameCh').val();
+            const password = $('#passwordCh').val();
+            const roles = $('#rolesCh').val();
+            const passwordChanged = $('#passwordChangedInput').val(); // Получаем значение флага изменения пароля
+
+            // Создаем объект с данными пользователя
+            const userData = {
+                id: userId,
+                username: username,
+                password: password,
+                roles: roles, // Преобразуем массив в строку
+                passwordChanged: passwordChanged === 'true' // Преобразуем значение в boolean
+            };
+
+            // Отправляем данные на сервер
+            fetch('/admin/change', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userData)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        $('#editUserModal').modal('hide'); // Закрываем модальное окно
+                        updateUsersTable(); // Обновляем таблицу пользователей
+                    } else {
+                        throw new Error('Error updating user');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    $('#errorMessage').text('Error updating user');
+                });
+        });
+
+        loadRoles();
+        // Добавляем обработчик события для каждой кнопки "Delete"
+        $(document).on('click', '.delete-user-btn', function () {
+            // Получаем имя пользователя из строки таблицы
+            const username = $(this).closest('tr').find('.username-cell').text();
+
+            // Выполняем AJAX-запрос, чтобы получить данные о пользователе
+            $.ajax({
+                type: 'GET',
+                url: '/admin/findUser',
+                data: {
+                    username: username
+                },
+                success: function (userData) {
+                    // Заполняем модальное окно данными о пользователе для удаления
+                    $('#deleteUserInfoId').text(userData.id);
+                    $('#deleteUserInfoUsername').text(userData.username);
+                    $('#deleteUserInfoRoles').text(userData.roles.map(role => role.authority).join(', '));
+
+                    // Открываем модальное окно для удаления пользователя
+                    $('#deleteUserModal').modal('show');
+                },
+                error: function () {
+                    console.error('Ошибка при получении данных пользователя');
+                }
+            });
+        });
+        // Добавляем обработчик события для кнопки "Delete"
+        $('#confirmDeleteUserButton').on('click', function () {
+            const userId = $('#deleteUserInfoId').text(); // Получаем ID пользователя из модального окна
+
+            // Отправляем запрос на сервер для удаления пользователя с указанным ID
+            $.ajax({
+                type: 'GET',
+                url: '/admin/delete?id=' + userId,
+                success: function () {
+                    // Если удаление прошло успешно, закрываем модальное окно и обновляем страницу
+                    $('#deleteUserModal').modal('hide');
+                    updateUsersTable();
+                },
+                error: function () {
+                    // Если произошла ошибка при удалении, выведите сообщение об ошибке
+                    console.error('Error deleting user');
+                    // Можно также отобразить сообщение об ошибке на странице
+                }
+            });
+        });
+
+        // Функция для получения данных о текущем пользователе и заполнения таблицы
+        function fetchCurrentUserAndPopulateTable() {
+            fetch('/admin/currentUser')
+                .then(response => response.json())
+                .then(user => {
+                    // После успешного получения данных о текущем пользователе заполняем таблицу
+                    populateUserTable([user]);
+                })
+                .catch(error => {
+                    console.error('Ошибка при получении данных о текущем пользователе:', error);
+                });
+        }
+
+// Функция для заполнения таблицы данными о пользователе
+        function populateUserTable(users) {
+            const tbody = document.querySelector('#user tbody');
+            tbody.innerHTML = ''; // Очищаем содержимое tbody перед заполнением
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+
+                // Создаем ячейки для каждого столбца и заполняем их данными из объекта пользователя
+                const idCell = document.createElement('td');
+                idCell.textContent = user.id;
+                row.appendChild(idCell);
+
+                const usernameCell = document.createElement('td');
+                usernameCell.textContent = user.username;
+                usernameCell.classList.add('username-cell'); // Добавляем класс .username-cell
+                row.appendChild(usernameCell);
+
+                const rolesCell = document.createElement('td');
+                // Преобразуем массив ролей пользователя в строку и заполняем соответствующую ячейку
+                rolesCell.textContent = user.roles.map(role => role.authority).join(', ');
+                row.appendChild(rolesCell);
+
+                // Добавляем строку в таблицу
+                tbody.appendChild(row);
+            });
+        }
+
+
+// Вызываем функцию для получения данных о текущем пользователе и заполнения таблицы
+        fetchCurrentUserAndPopulateTable();
+
+
+    });
+
+
+</script>
+
+
+</body>
+</html>

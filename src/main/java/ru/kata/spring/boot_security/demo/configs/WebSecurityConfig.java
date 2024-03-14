@@ -29,7 +29,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/", "/index","/admin/logoutSuccess").permitAll()
-                .antMatchers("/user").hasAnyRole("USER","ADMIN")
+                .antMatchers("/user","/admin/currentUser").hasAnyRole("USER","ADMIN")
                 .anyRequest().hasRole("ADMIN")
                 .and()
                 .formLogin().successHandler(successUserHandler)
@@ -37,12 +37,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .logout()
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/admin/logoutSuccess")
+                .logoutSuccessUrl("/logoutSuccess")
                 .deleteCookies("JSESSIONID")
                 .invalidateHttpSession(true)
                 .permitAll()
                 .and()
-                .authenticationProvider(daoAuthenticationProvider());
+                .authenticationProvider(daoAuthenticationProvider())
+                .csrf().disable();
     }
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
