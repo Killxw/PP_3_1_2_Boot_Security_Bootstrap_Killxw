@@ -44,10 +44,8 @@ public class UserDaolmp implements UserDao {
         User user1 = entityManager.find(User.class, user.getId());
         user1.setUsername(user.getUsername());
         if (user.isPasswordChanged()) {
-            String encodedPassword = passwordEncoder.encode(user.getPassword());
-            user1.setPassword(encodedPassword);
+            user1.setPassword(user.getPassword());
         }
-
         user1.setRoles(user.getRoles());
         entityManager.merge(user1);
     }
